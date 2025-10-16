@@ -73,4 +73,4 @@ jobs:
         echo "- Total tests: ${{ steps.summary.outputs.total }}" >> $GITHUB_STEP_SUMMARY
         echo "- Passed: ${{ steps.summary.outputs.passed }}" >> $GITHUB_STEP_SUMMARY
         echo "- Failed: ${{ steps.summary.outputs.failed }}" >> $GITHUB_STEP_SUMMARY
-        echo "- [View Allure Report](https://${{ github.repository_owner }}.github.io/${{ github.repository }}/allure-report/)" >> $GITHUB_STEP_SUMMARY
+        echo "- [View Allure Report](https://brunokutacho.github.io/Bookstore.ApiTests/)" >> $GITHUB_STEP_SUMMARY
