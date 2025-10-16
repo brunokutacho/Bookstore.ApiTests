@@ -7,7 +7,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  api_tests:
+    name: Run API Tests and Generate Allure Report
     runs-on: ubuntu-latest
 
     steps:
