@@ -37,17 +37,16 @@ jobs:
       run: |
         wget https://github.com/allure-framework/allure2/releases/download/2.35.1/allure-2.35.1.zip -O allure.zip
         unzip allure.zip -d ./allure
-        export PATH="$PWD/allure/bin:$PATH"
-        allure --version
+        ./allure/bin/allure --version
 
     - name: Generate Allure report
       run: |
         REPORT_DIR=./allure-report
-        allure generate ./allure-results --clean -o $REPORT_DIR
+        ./allure/bin/allure generate ./allure-results --clean -o $REPORT_DIR
         echo "Report generated at $REPORT_DIR"
 
     - name: Deploy Allure report to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v4.0.0
+      uses: peaceiris/actions-gh-pages@v3.9.3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./allure-report
