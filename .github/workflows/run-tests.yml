@@ -37,12 +37,12 @@ jobs:
       run: |
         wget https://github.com/allure-framework/allure2/releases/download/2.35.1/allure-2.35.1.zip -O allure.zip
         unzip allure.zip -d ./allure
-        ./allure/bin/allure --version
+        ./allure/allure-2.35.1/bin/allure --version
 
     - name: Generate Allure report
       run: |
         REPORT_DIR=./allure-report
-        ./allure/bin/allure generate ./allure-results --clean -o $REPORT_DIR
+        ./allure/allure-2.35.1/bin/allure generate ./allure-results --clean -o $REPORT_DIR
         echo "Report generated at $REPORT_DIR"
 
     - name: Deploy Allure report to GitHub Pages
