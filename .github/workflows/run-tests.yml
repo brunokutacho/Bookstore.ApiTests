@@ -1,0 +1,76 @@
+name: .NET API Tests with Allure
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build project
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Run tests with Allure results
+      id: dotnet_test
+      run: |
+        mkdir -p allure-results
+        dotnet test --no-build --configuration Release \
+          --logger "trx;LogFileName=test_results.trx" \
+          --results-directory ./allure-results
+      continue-on-error: true
+
+    - name: Install Allure CLI
+      run: |
+        wget https://github.com/allure-framework/allure2/releases/download/2.30.1/allure-2.30.1.zip -O allure.zip
+        unzip allure.zip -d ./allure
+        export PATH="$PWD/allure/bin:$PATH"
+        allure --version
+
+    - name: Generate Allure report
+      run: |
+        REPORT_DIR=./allure-report
+        allure generate ./allure-results --clean -o $REPORT_DIR
+        echo "Report generated at $REPORT_DIR"
+
+    - name: Deploy Allure report to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v6
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./allure-report
+        publish_branch: gh-pages
+        user_name: github-actions
+        user_email: github-actions@github.com
+
+    - name: Extract test results for summary
+      id: summary
+      run: |
+        TOTAL=$(grep -o '<UnitTestResult' ./allure-results/test_results.trx | wc -l)
+        PASSED=$(grep 'outcome="Passed"' ./allure-results/test_results.trx | wc -l)
+        FAILED=$(grep 'outcome="Failed"' ./allure-results/test_results.trx | wc -l)
+
+        echo "total=$TOTAL" >> $GITHUB_OUTPUT
+        echo "passed=$PASSED" >> $GITHUB_OUTPUT
+        echo "failed=$FAILED" >> $GITHUB_OUTPUT
+
+    - name: Add summary to GitHub Actions
+      run: |
+        echo "### Test Execution Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- Total tests: ${{ steps.summary.outputs.total }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Passed: ${{ steps.summary.outputs.passed }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Failed: ${{ steps.summary.outputs.failed }}" >> $GITHUB_STEP_SUMMARY
+        echo "- [View Allure Report](https://${{ github.repository_owner }}.github.io/${{ github.repository }}/allure-report/)" >> $GITHUB_STEP_SUMMARY
