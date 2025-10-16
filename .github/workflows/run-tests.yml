@@ -35,7 +35,7 @@ jobs:
 
     - name: Install Allure CLI
       run: |
-        wget https://github.com/allure-framework/allure2/releases/download/2.30.1/allure-2.30.1.zip -O allure.zip
+        wget https://github.com/allure-framework/allure2/releases/download/2.35.1/allure-2.35.1.zip -O allure.zip
         unzip allure.zip -d ./allure
         export PATH="$PWD/allure/bin:$PATH"
         allure --version
